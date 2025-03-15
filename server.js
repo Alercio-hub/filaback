@@ -2,12 +2,6 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 require('dotenv').config();
-const authRouter = require('./routes/auth');
-app.use('/api/auth', authRouter);
-
-
-// Importar rotas
-const formadoresRouter = require('./routes/formadores');
 
 // Inicializar aplicação Express
 const app = express();
@@ -16,18 +10,23 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Conectar ao MongoDB
-mongoose.connect(process.env.MONGO_URI)
-    .then(() => console.log("✅ MongoDB Conectado"))
-    .catch(err => console.error("❌ Erro de conexão ao MongoDB:", err));
+// Importar rotas
+const authRouter = require('./routes/auth');
+const formadoresRouter = require('./routes/formadores');
 
 // Rotas
-app.use('/api/formadores', formadoresRouter);  // Agora está após os middlewares
+app.use('/api/auth', authRouter);
+app.use('/api/formadores', formadoresRouter);
 
-// Rota raiz
-app.get("/", (req, res) => {
-    res.send("🚀 Backend do FilaporVoce funcionando!");
+// Rota de teste
+app.get('/api/test', (req, res) => {
+  res.json({ message: 'Conexão com o backend funcionando!' });
 });
+
+// Conectar ao MongoDB
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log("✅ MongoDB Conectado"))
+  .catch(err => console.error("❌ Erro de conexão ao MongoDB:", err));
 
 // Iniciar servidor
 const PORT = process.env.PORT || 5000;
